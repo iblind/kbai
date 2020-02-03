@@ -17,6 +17,90 @@ import numpy
 
 pp = pprint.PrettyPrinter(indent=4)
 
+
+
+class makeFigure:
+    def __init__(self, figure, name, properties):
+        self.figure = figure
+        self.name = name
+        self.properties = properties
+
+def check_num_figures(a,b):
+    if(len(a)==len(b)):
+        return 1
+    else:
+      return 0
+
+def get_object_properties(problem,obj):
+
+    object_figure_keys = list(problem.figures[obj].objects.keys())
+
+    # print('Figure : '+str(obj)+'\nNum objects: '+str(len(object_figure_keys)))
+
+    list_of_figures_in_object=[]
+
+    for figure in object_figure_keys:
+        fig_name = problem.figures[obj].objects[figure].name
+        fig_properties = problem.figures[obj].objects[figure].attributes
+        current_figure = makeFigure(obj,fig_name,fig_properties).__dict__ #assign as a dictionary
+        list_of_figures_in_object.append(current_figure)
+
+        del fig_name
+        del fig_properties
+        del current_figure
+
+    # pp.pprint(list_of_figures_in_object)
+    return list_of_figures_in_object
+
+
+def check_number_of_figures(fig_list_1, fig_list_2):
+    if (len(fig_list_1) == len(fig_list_2)):
+        return 1
+    else:
+        return 0
+
+
+def check_if_objects_are_same(fig_A,fig_B):
+    if (fig_A['properties'] == fig_B['properties']):
+        return True
+    else:
+        return False
+
+def compare_object_properties(fig_A, fig_B):
+    same_properties = 1;
+    differences = {}
+    print('fig a: ')
+    print(fig_A)
+    print('fig b: ')
+    print(fig_B)
+
+    # Check that we have the same number of properties
+    # if yes, proceed to check whether they're the same
+    # #TODO if no, see which object has more properties and deal with that
+
+    if(len(fig_B['properties'])==len(fig_A['properties'])):
+        for key in fig_A['properties']:
+            if fig_A['properties'][key] == fig_B['properties'][key]:
+                same_properties = 1
+                differences[key] = {'same_properties': same_properties, 'differences':''}
+            else:
+                same_properties = 0
+                differences[key] = {'same_properties':same_properties,'differences':{'A': fig_A['properties'][key], 'B': fig_B['properties'][key]}}
+
+        print({'properties': {'size': 'very large', 'fill': 'yes', 'shape': 'square'}}=={'properties': {'size': 'very large', 'fill': 'yes', 'shape': 'square'}})
+
+    return differences
+    # print(differences)
+    # transformations = []
+    # for attribute in list(differences.keys()):
+    #     if(differences[attribute]['same_properties']==1):
+    #         continue
+    #     else:
+    #         transformations.append(differences[attribute])
+
+
+
+
 class Agent:
     # The default constructor for your Agent. Make sure to execute any
     # processing necessary before your Agent starts solving problems here.
@@ -25,6 +109,7 @@ class Agent:
     # main().
     def __init__(self):
         pass
+
 
 
     # The primary method for solving incoming Raven's Progressive Matrices.
@@ -39,71 +124,113 @@ class Agent:
     def Solve(self,problem):
 
 
-        if('Basic Problem B-01' in problem.name): #TODO generalize to more problems
+        if('Basic Problem B-01' in problem.name): #TODO add other problems
 
-            object_a = {}
-            object_b = {}
-            object_c = {}
-            object_d = {}
+            def handle_goal(x):
 
-            print('\n\n\n')
-            print(problem.name)
-            print(problem.problemType)
-            print(problem.problemSetName)
+                if (x == 'single_object_no_change'):
 
-
-
-
-            choices = ['1','2','3','4','5','6']
-            original_objects = ['A','B']
-            new_object= 'C'
-
-
-            # for choice in choices:
-            #     print(choice+':')
-            #     pp.pprint(problem.figures[choice].objects.keys())
-            #     print('\n')
-
-            pp.pprint(problem.figures['B'].objects['b'].name)
-            pp.pprint(problem.figures['B'].objects['b'].attributes)
-
-            pp.pprint(problem.figures['A'].objects['a'].name)
-            pp.pprint(problem.figures['A'].objects['a'].attributes)
-
-            a_attributes
+                    returned_answer = -1
+                    for answer in potential_answers:
+                        if(check_if_objects_are_same(figures_C[0],answer[0])):
+                            returned_answer = int((answer[0]['figure']))
+                        # if(check_if_objects_are_same(figures_C[0],answer[0])):
+                        #     selected_choice =int(answer[0]['figure'])
+                        #     print(answer[0]['figure'])
+                        #     return selected_choice
+                        # else:
+                        #     return -1
+                    return returned_answer
 
 
-            # for fig in problem.figures.keys():
-            #     print(fig)
+            figures_A = get_object_properties(problem, 'A')
+            figures_B = get_object_properties(problem, 'B')
+            figures_C = get_object_properties(problem, 'C')
+            figures_1 = get_object_properties(problem, '1')
+            figures_2 = get_object_properties(problem, '2')
+            figures_3 = get_object_properties(problem, '3')
+            figures_4 = get_object_properties(problem, '4')
+            figures_5 = get_object_properties(problem, '5')
+            figures_6 = get_object_properties(problem, '6')
 
-            # print(problem.figures['A'].keys())
-            # print(problem.figures['A'].name)
-            # print(problem.figures['A'].objects)
-            # print(problem.figures['A'].visualFilename)
+            potential_answers= [figures_1,figures_2,figures_3,figures_4,figures_5,figures_6]
+
+            match_goal = ' '
+
+
+            # Check if number of figures are the same
+            #     if yes, check if number of properties are the same
+            #             if yes, check if values of properties are the same
+
+
+            # Check number of properties in A; check number of properties in B; if they are equal, transition is  "no change"
+
+
+            # Compare figures A and B
+            # 1. Same number of figures?
+            #         if yes: same_num_figures = True
+            #         a. only one figure?
+            #                 if yes:
+
+            #         b. many figures?
+            #                 if yes:
+            #                     check_differences_between_figures()
+            #                 if no:
+            #                     set_objective(find_figure_identical_to_C)
+
+            # 2. Dif number of figures?
+            #         same_num_figures = False
+            #         i. which figure is missing?
+            # 2.
             #
-            # relevant_key = problem.figures['A'].objects.keys()
+            no_changes =False
+
+            same_num_figures_A_B = len(figures_A)==len(figures_B)
+
+            # Same number of figures AND 1 figure each
+            if((same_num_figures_A_B) and (len(figures_A)==1)):
+                # Check if values for any properties are different.
+                object_A_and_B_same = check_if_objects_are_same(figures_A[0],figures_B[0])
+                if(object_A_and_B_same==True):
+                    match_goal = 'single_object_no_change'
+                else:
+                    print('diff')
+
+
+            print(match_goal)
+            selected_choice = handle_goal(match_goal)
+            return selected_choice
+
+                # If no differences
+                # if (len(differences)==0):
+                #     no_changes = True
+
+            # Find answer with the same attributes as C
+            # print('potential answer original length: '+str(len(potential_answers)))
+            # for answer in potential_answers:
+            #     differences_answers = compare_properties(figures_C[0],answer[0])
+            #     print(differences_answers)
             #
-            # print(problem.figures['A'].objects['a'].attributes)
+            #     remove_this = False
+            #     for attribute in list(differences_answers.keys()):
+            #         if(differences_answers[attribute]['same_properties']==0):
+            #             remove_this = True
+            #         else:
+            #             continue
             #
-            # all_figures = list(problem.figures.keys())
-            #
-            # for fig in all_figures:
-            #     problem.figures
+            #     if(remove_this==True):
+            #         potential_answers.remove(answer)
 
 
 
 
 
-            # pp.pprint(inspect.getmembers(problem, lambda a: not (inspect.isroutine(a))))
-            # for key in problem.figures:
-            #     print(key.keys())
 
-
-
-            return -1
+            # return -1
 
         else:
             return -1
+
 
 
 
