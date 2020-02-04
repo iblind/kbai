@@ -66,14 +66,21 @@ def check_if_objects_are_same(fig_A,fig_B):
     else:
         return False
 
+def select_relevant_transformation(differences):
+    relevant_differences = []
+
+    for attribute in differences.keys():
+        if(differences[attribute]['same_properties']==1):
+            continue
+        else:
+            # print(differences)
+            differences[attribute]['differences']['attribute']=attribute
+            relevant_differences.append(differences[attribute])
+    return relevant_differences
+
 def compare_object_properties(fig_A, fig_B):
     same_properties = 1;
     differences = {}
-    print('fig a: ')
-    print(fig_A)
-    print('fig b: ')
-    print(fig_B)
-
     # Check that we have the same number of properties
     # if yes, proceed to check whether they're the same
     # #TODO if no, see which object has more properties and deal with that
@@ -87,8 +94,7 @@ def compare_object_properties(fig_A, fig_B):
                 same_properties = 0
                 differences[key] = {'same_properties':same_properties,'differences':{'A': fig_A['properties'][key], 'B': fig_B['properties'][key]}}
 
-        print({'properties': {'size': 'very large', 'fill': 'yes', 'shape': 'square'}}=={'properties': {'size': 'very large', 'fill': 'yes', 'shape': 'square'}})
-
+    print(differences)
     return differences
     # print(differences)
     # transformations = []
@@ -124,9 +130,9 @@ class Agent:
     def Solve(self,problem):
 
 
-        if('Basic Problem B-01' in problem.name): #TODO add other problems
+        if('Basic Problem B-04' in problem.name): #TODO add other problems
 
-            def handle_goal(x):
+            def handle_goal(x,differences):
 
                 if (x == 'single_object_no_change'):
 
@@ -134,13 +140,28 @@ class Agent:
                     for answer in potential_answers:
                         if(check_if_objects_are_same(figures_C[0],answer[0])):
                             returned_answer = int((answer[0]['figure']))
-                        # if(check_if_objects_are_same(figures_C[0],answer[0])):
-                        #     selected_choice =int(answer[0]['figure'])
-                        #     print(answer[0]['figure'])
-                        #     return selected_choice
-                        # else:
-                        #     return -1
+
                     return returned_answer
+                elif(x=='single_object_change_single'):
+
+                    differences_A_B = differences
+
+                    for answer in potential_answers:
+
+                        differences_C_and_choice = compare_object_properties(figures_C[0], answer[0])
+                        # Reduce differences to only relevant ones
+                        relevant_differences_C_and_choice = select_relevant_transformation(differences_C_and_choice)
+
+                        if(differences_A_B==relevant_differences_C_and_choice):
+                            returned_answer = int((answer[0]['figure']))
+                            return returned_answer
+
+                    return -1
+                elif(x=='skip'):
+                    returned_answer = -1
+                    return returned_answer
+                else:
+                    return -1
 
 
             figures_A = get_object_properties(problem, 'A')
@@ -156,6 +177,7 @@ class Agent:
             potential_answers= [figures_1,figures_2,figures_3,figures_4,figures_5,figures_6]
 
             match_goal = ' '
+            differences = {}
 
 
             # Check if number of figures are the same
@@ -183,7 +205,7 @@ class Agent:
             #         i. which figure is missing?
             # 2.
             #
-            no_changes =False
+
 
             same_num_figures_A_B = len(figures_A)==len(figures_B)
 
@@ -191,42 +213,24 @@ class Agent:
             if((same_num_figures_A_B) and (len(figures_A)==1)):
                 # Check if values for any properties are different.
                 object_A_and_B_same = check_if_objects_are_same(figures_A[0],figures_B[0])
-                if(object_A_and_B_same==True):
+                if(object_A_and_B_same==True): #If same num of objects, and only 1 object, and those objects are the same
                     match_goal = 'single_object_no_change'
-                else:
-                    print('diff')
+                elif(object_A_and_B_same==False):
+                    differences = compare_object_properties(figures_A[0],figures_B[0])
+                    differences = select_relevant_transformation(differences)
+                    if(len(differences)>1):
+                        match_goal = 'single_object_change_multiple'
+                    elif(len(differences)==1):
+                        match_goal = 'single_object_change_single'
 
 
-            print(match_goal)
-            selected_choice = handle_goal(match_goal)
+
+            print('match goal: '+match_goal)
+
+            selected_choice = handle_goal(match_goal, differences)
+            print(selected_choice)
             return selected_choice
 
-                # If no differences
-                # if (len(differences)==0):
-                #     no_changes = True
-
-            # Find answer with the same attributes as C
-            # print('potential answer original length: '+str(len(potential_answers)))
-            # for answer in potential_answers:
-            #     differences_answers = compare_properties(figures_C[0],answer[0])
-            #     print(differences_answers)
-            #
-            #     remove_this = False
-            #     for attribute in list(differences_answers.keys()):
-            #         if(differences_answers[attribute]['same_properties']==0):
-            #             remove_this = True
-            #         else:
-            #             continue
-            #
-            #     if(remove_this==True):
-            #         potential_answers.remove(answer)
-
-
-
-
-
-
-            # return -1
 
         else:
             return -1
