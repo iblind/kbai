@@ -270,6 +270,7 @@ class Agent:
 
                 # if both figures have one object inside of another
                 if(one_object_inside_another_A and one_object_inside_another_B):
+                    get_inside_object(figures_A)
                     # inside_object_A
                     # outside_object_A
                     #
