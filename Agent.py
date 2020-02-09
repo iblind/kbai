@@ -396,10 +396,13 @@ class Agent:
             same_num_figures_A_B = length_fig_A == length_fig_B
             same_num_figures_A_C = length_fig_A == length_fig_C
 
-            'B-01', 'B-03', 'B-04', 'B-05', 'B-07', 'B-09'
+
             # QA checks
-            if('B-01' in problem.name):
-                compare_objects(figures_A[0],figures_B[0])
+            check_problem_list =['B-01', 'B-03', 'B-04', 'B-05', 'B-07', 'B-09']
+
+            for problem in check_problem_list:
+                if(problem in problem.name ):
+                    compare_objects(figures_A[0],figures_B[0])
 
             # Same number of figures AND 1 figure each
             if((same_num_figures_A_B) and (len(figures_A)==1)):
