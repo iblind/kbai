@@ -237,6 +237,7 @@ def compare_objects(obj1, obj2):
     difference_object['object_identical']=object_identical
     difference_object['same_properties'] = same_properties
     difference_object['same_property_differences']=list_of_differences_for_same_properties
+    difference_object['num_same_property_differences'] = len(list_of_differences_for_same_properties)
     difference_object['obj_1_exclusive_properties']=obj_1_exclusive_properties
     difference_object['obj_2_exclusive_properties'] = obj_2_exclusive_properties
 
@@ -277,34 +278,73 @@ class Agent:
                 # If same object in figures A, B, and C (i.e., all objects the same)
                 if((dif_A_B['object_identical']==True) and (dif_A_C['object_identical']==True)):
                     for choice in potential_answers:
-                        dif_C_1 =  compare_objects(figures_C[0],choice[0])
-                        if((dif_C_1==dif_A_B) and (dif_C_1==dif_A_C)):
+                        dif_C_choice =  compare_objects(figures_C[0],choice[0])
+                        if((dif_C_choice==dif_A_B) and (dif_C_choice==dif_A_C)):
                             answer = choice[0]['meta_fig_name']
                             print('answer is: '+answer )
 
                 # If there's a difference between figures A and B, but not A and C (horizontal difference, vertically the same)
-                elif((dif_A_B['object_identical']==False) and (dif_A_C['object_identical']==True)):
-                    for choice in potential_answers:
-                        dif_C_1 = compare_objects(figures_C[0], choice[0])
-                        if(dif_C_1==dif_A_B):
-                            answer = choice[0]['meta_fig_name']
-                            print('answer is: ' + answer)
+                elif((dif_A_B['object_identical']==False) and (dif_A_C['object_identical']==True) and ( dif_A_B['same_properties']==True)):
 
-                # If there's a differences between figures A and C, but not A and B (vertical different, horizontally the same)
-                elif((dif_A_B['object_identical']==True) and (dif_A_C['object_identical']==False)):
-                    for choice in potential_answers:
-                        dif_B_1 = compare_objects(figures_B[0], choice[0])
-                        if(dif_C_1==dif_A_C):
-                            answer = choice[0]['meta_fig_name']
-                            print('answer is: ' + answer)
+                    if(dif_A_B['num_same_property_differences']==1):
+                        differing_property = dif_A_B['same_property_differences']
 
-                # If there's a difference between both A and B AND A and C (vertical AND horizontal difference)
-                elif ((dif_A_B['object_identical'] == False) and (dif_A_C['object_identical'] == False)):
-                    for choice in potential_answers:
-                        dif_C_1 = compare_objects(figures_C[0], choice[0])
-                        if (dif_C_1 == dif_A_C):
-                            answer = choice[0]['meta_fig_name']
-                            print('answer is: ' + answer)
+                        for choice in potential_answers:
+                            dif_C_1 = compare_objects(figures_C[0], choice[0])
+                            if(dif_C_1==dif_A_B):
+                                answer = choice[0]['meta_fig_name']
+                                print('answer is: ' + answer)
+
+                # # If there's a differences between figures A and C, but not A and B (vertical different, horizontally the same), and if difference is only in values
+                elif((dif_A_B['object_identical']==True) and (dif_A_C['object_identical']==False) and (dif_A_C['same_properties']==True)):
+                    if (dif_A_C['num_same_property_differences'] == 1):
+                        for choice in potential_answers:
+                            dif_B_1 = compare_objects(figures_B[0], choice[0])
+                            if(dif_B_1==dif_A_C):
+                                answer = choice[0]['meta_fig_name']
+                                print('answer is: ' + answer)
+                #
+                # If there's a difference between both A and B AND A and C (vertical AND horizontal difference), and if difference is only in values
+                elif ((dif_A_B['object_identical'] == False) and (dif_A_C['object_identical'] == False) and (dif_A_B['same_properties'] == True) and (dif_A_C['same_properties'] == True)):
+
+                    if (dif_A_B['num_same_property_differences'] == 1 and dif_A_C['num_same_property_differences'] == 1):
+                        for choice in potential_answers:
+
+                            dif_B_choice = compare_objects(figures_B[0], choice[0])
+                            dif_C_choice = compare_objects(figures_C[0], choice[0])
+
+                            # Since we know there's a difference between BOTHA and B (horizontal ) and A and C (vertical) already,
+                            # we can ignore all answer choices that have no differences between B and the choice, or C and the choice.
+
+                            if(len(dif_B_choice['same_property_differences'])==0):
+                                continue
+                            if (len(dif_C_choice['same_property_differences']) == 0):
+                                continue
+
+                            # Vertical
+                            relevant_dif_B_choice = dif_B_choice['same_property_differences'][0]['property']
+
+                            # Horizontal
+                            relevant_dif_C_choice = dif_C_choice['same_property_differences'][0]['property']
+                            # pp.pprint(dif_B_choice)
+                            # pp.pprint(dif_C_choice)
+
+
+                            print('horizontal: A vs. B')
+                            pp.pprint(dif_A_B)
+                            print('horizontal: C vs. Choice')
+                            pp.pprint(dif_C_choice)
+
+                            print('vertical: A vs. C')
+                            pp.pprint(dif_A_C)
+                            print('vertical: B vs. Choice')
+                            pp.pprint(dif_B_choice)
+
+                            if ((dif_C_choice == dif_A_B) and (dif_B_choice==dif_A_C)):
+                                answer = choice[0]['meta_fig_name']
+                                print('answer is: ' + answer)
+                            elif((relevant_dif_B_choice==relevant_dif_C_choice) and (relevant_dif_C_choice=='angle') ):
+                                print('')
 
             def handle_goal(x,differences):
 
@@ -429,16 +469,16 @@ class Agent:
 
             # If same number of figures in A-B, A-C dyads AND that number is 1
             if((same_num_figures_A_B) and (same_num_figures_A_B) and (length_fig_A==1)):
-                print('\n\n')
-                print('Difference between A and B:')
+                # print('\n\n')
+                # print('Difference between A and B:')
                 difference_A_B = compare_objects(figures_A[0], figures_B[0])
-                pp.pprint(difference_A_B)
-                print('\n')
-                print('Difference between A and C:')
+                # pp.pprint(difference_A_B)
+                # print('\n')
+                # print('Difference between A and C:')
                 difference_A_C = compare_objects(figures_A[0], figures_C[0])
-                pp.pprint(difference_A_C)
-                print('\n')
-                pp.pprint(difference_A_C['object_identical'])
+                # pp.pprint(difference_A_C)
+                # print('\n')
+
 
                 handle_differences_one_object(difference_A_B,difference_A_C)
 
