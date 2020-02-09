@@ -17,14 +17,19 @@ import numpy as np
 
 pp = pprint.PrettyPrinter(indent=4)
 
-
-
+bonus_properties_list = ['angle','inside','alignment','above']
+standard_properties_list = ['shape','fill','size']
 
 class makeFigure:
     def __init__(self, figure, name, properties):
         self.figure = figure
         self.name = name
         self.properties = properties
+        self.properties_list = sorted(list(properties.keys()))
+        self.properties_list_bonus =  sorted([key for key in properties.keys() if(key in bonus_properties_list)])
+        self.properties_list_standard = sorted(standard_properties_list)
+        self.meta_obj_name = name
+        self.meta_fig_name = figure
 
 
 def check_num_figures(a,b):
@@ -153,6 +158,92 @@ def compare_same_property_object(obj1, obj2):
     # print(differences)
     # return differences
 
+
+
+# REFORMATTING CODE!!!
+def how_many_object_in_figure(fig):
+    return len(fig)
+    # print(fig)
+
+def compare_objects(obj1, obj2):
+
+    object_identical = True
+    same_properties = True
+    exclusive_properties = False
+
+    difference_object={}
+
+    list_of_differences_for_same_properties=[]
+
+    obj_1_exclusive_properties = []
+    obj_2_exclusive_properties = []
+
+
+
+    # Check if keys, when sorted, are the same
+    if(sorted(obj1['properties_list']) == sorted(obj2['properties_list'])):
+
+        # If keys are the same, check differences in values
+        for key in obj1['properties_list']:
+            # If values are the same for each key, maintain default value of "these two objects are the same"
+            if(obj1['properties'][key]==obj2['properties'][key]):
+                continue
+
+            # If values differ for a key, list the differences between these objects
+            else:
+                object_identical = False
+
+                property_dif = {}
+                property_dif['property']=key
+                property_dif['obj_1_value']= obj1['properties'][key]
+                property_dif['obj_2_value'] = obj2['properties'][key]
+                list_of_differences_for_same_properties.append(property_dif)
+                del property_dif
+
+
+    # # If keys are different in some way:
+    else:
+        same_properties = False
+        object_identical = False
+
+        # Check which key is present in object 1 that's not present in object 2
+        for key in obj1['properties_list']:
+            if(key in obj2['properties_list']):
+                continue
+            else:
+                obj1_exclusive_property = {}
+                obj1_exclusive_property['property'] = key
+                obj1_exclusive_property['value'] = obj1['properties'][key]
+
+
+                obj_1_exclusive_properties.append(obj1_exclusive_property)
+
+                del obj1_exclusive_property
+
+        # Check which key is present in object 2 that's not present in object 1
+
+        for key in obj2['properties_list']:
+            if (key in obj1['properties_list']):
+                continue
+            else:
+                obj2_exclusive_property = {}
+                obj2_exclusive_property['property'] = key
+                obj2_exclusive_property['value'] = obj2['properties'][key]
+
+                obj_2_exclusive_properties.append(obj2_exclusive_property)
+
+                del obj2_exclusive_property
+
+    difference_object['object_identical']=object_identical
+    difference_object['same_properties'] = same_properties
+    difference_object['same_property_differences']=list_of_differences_for_same_properties
+    difference_object['obj_1_exclusive_properties']=obj_1_exclusive_properties
+    difference_object['obj_2_exclusive_properties'] = obj_2_exclusive_properties
+
+    pp.pprint(difference_object)
+    return difference_object
+
+
 class Agent:
     # The default constructor for your Agent. Make sure to execute any
     # processing necessary before your Agent starts solving problems here.
@@ -175,11 +266,12 @@ class Agent:
     # Returning your answer as a string may cause your program to crash.
     def Solve(self,problem):
 
+
         solvethings=1
         # solvethings
     # 'Basic Problem B-04' in problem.name
-        if(solvethings): #TODO add other problems
-
+        if('Basic Problem B-03' in problem.name): #TODO add other problems
+            print(problem.name)
             def handle_goal(x,differences):
 
                 if (x == 'single_object_no_change'):
@@ -199,9 +291,9 @@ class Agent:
                     if(attribute_A_B=='angle'):
                         difference_attribute_A_B = int(differences_A_B[0]['differences']['B'])-int(differences_A_B[0]['differences']['A'])
 
-                    print('-')
-                    print(differences_A_B)
-                    print('-')
+                    # print('-')
+                    # print(differences_A_B)
+                    # print('-')
 
                     for answer in potential_answers:
 
@@ -213,10 +305,10 @@ class Agent:
                             continue
                         attribute_C_choice = relevant_differences_C_and_choice[0]['differences']['attribute']
 
-                        print(relevant_differences_C_and_choice)
+                        # print(relevant_differences_C_and_choice)
                         if(attribute_C_choice=='angle'):
                             difference_attribute_C_choice = int(relevant_differences_C_and_choice[0]['differences']['B']) - int(relevant_differences_C_and_choice[0]['differences']['A'])
-                            print(difference_attribute_C_choice)
+                            # print(difference_attribute_C_choice)
                             if ((attribute_A_B==attribute_C_choice) and(np.absolute(difference_attribute_A_B)==np.absolute(difference_attribute_C_choice))):
                                 returned_answer = int((answer[0]['figure']))
                                 return returned_answer
@@ -230,13 +322,13 @@ class Agent:
                     inside_object_C = get_inside_object_two_obj_total(figures_C)
                     outside_object_C = get_outside_object_two_obj_total(figures_C)
 
-                    print(inside_object_C)
-                    print(outside_object_C)
+                    # print(inside_object_C)
+                    # print(outside_object_C)
 
                     answercnt=0
                     for answer in potential_answers:
                         answercnt+=1
-                        print(answercnt)
+                        # print(answercnt)
                         choices_inside_object_answer = get_inside_object_two_obj_total(answer)
                         choices_outside_object_answer = get_outside_object_two_obj_total(answer)
 
@@ -248,14 +340,14 @@ class Agent:
                         choices_relevant_inside_obj_differences = select_relevant_transformation(choices_inside_obj_differences)
                         choices_relevant_outside_obj_differences = select_relevant_transformation(choices_outside_obj_differences)
 
-                        print(choices_relevant_inside_obj_differences)
-                        print(choices_relevant_outside_obj_differences)
+                        # print(choices_relevant_inside_obj_differences)
+                        # print(choices_relevant_outside_obj_differences)
 
                         if ((len(choices_relevant_outside_obj_differences) == 0) and len(choices_relevant_inside_obj_differences) == 1):
-                            print('')
+                            # print('')
                             attribute_dif = relevant_inside_obj_differences[0]['differences']['attribute']
                             # print(relevant_inside_obj_differences)
-                            print(attribute_dif)
+                            # print(attribute_dif)
                             if (attribute_dif == 'inside'):
                                 returned_answer = int((answer[0]['figure']))
                                 return returned_answer
@@ -283,38 +375,31 @@ class Agent:
 
             potential_answers= [figures_1,figures_2,figures_3,figures_4,figures_5,figures_6]
 
+
+
+
             match_goal = ' '
             differences = {}
 
+            # Lengths of answers
+            length_fig_A = how_many_object_in_figure(figures_A)
+            length_fig_B = how_many_object_in_figure(figures_B)
+            length_fig_C = how_many_object_in_figure(figures_C)
+            length_fig_1 = how_many_object_in_figure(figures_1)
+            length_fig_2 = how_many_object_in_figure(figures_2)
+            length_fig_3 = how_many_object_in_figure(figures_3)
+            length_fig_4 = how_many_object_in_figure(figures_4)
+            length_fig_5 = how_many_object_in_figure(figures_5)
+            length_fig_6 = how_many_object_in_figure(figures_6)
 
-            # Check if number of figures are the same
-            #     if yes, check if number of properties are the same
-            #             if yes, check if values of properties are the same
+            # Checking if number of figures
+            same_num_figures_A_B = length_fig_A == length_fig_B
+            same_num_figures_A_C = length_fig_A == length_fig_C
 
-
-            # Check number of properties in A; check number of properties in B; if they are equal, transition is  "no change"
-
-
-            # Compare figures A and B
-            # 1. Same number of figures?
-            #         if yes: same_num_figures = True
-            #         a. only one figure?
-            #                 if yes:
-
-            #         b. many figures?
-            #                 if yes:
-            #                     check_differences_between_figures()
-            #                 if no:
-            #                     set_objective(find_figure_identical_to_C)
-
-            # 2. Dif number of figures?
-            #         same_num_figures = False
-            #         i. which figure is missing?
-            # 2.
-            #
-
-
-            same_num_figures_A_B = len(figures_A)==len(figures_B)
+            'B-01', 'B-03', 'B-04', 'B-05', 'B-07', 'B-09'
+            # QA checks
+            if('B-01' in problem.name):
+                compare_objects(figures_A[0],figures_B[0])
 
             # Same number of figures AND 1 figure each
             if((same_num_figures_A_B) and (len(figures_A)==1)):
@@ -360,16 +445,16 @@ class Agent:
                             # print('hell yes')
                             match_goal = 'two_objects_both_identical'
                             differences = relevant_inside_obj_differences
-                            print(differences)
+                            # print(differences)
 
 
                     # if(a['properties'])
 
 
-            print('match goal: '+match_goal)
+            # print('match goal: '+match_goal)
 
             selected_choice = handle_goal(match_goal, differences)
-            print(selected_choice)
+            # print(selected_choice)
             return selected_choice
 
 
