@@ -108,7 +108,20 @@ def compare_object_properties(fig_A, fig_B):
     #         transformations.append(differences[attribute])
 
 
+# B05
+def check_if_object_inside_another(figure):
 
+    inside_present = False;
+    for obj in figure:
+        if 'inside' in obj['properties'].keys():
+            inside_present =  True
+        else:
+            continue
+
+        return inside_present;
+
+def get_inside_object(figure):
+    print(figure)
 
 class Agent:
     # The default constructor for your Agent. Make sure to execute any
@@ -133,8 +146,9 @@ class Agent:
     def Solve(self,problem):
 
         solvethings=1
+        # solvethings
     # 'Basic Problem B-04' in problem.name
-        if(solvethings): #TODO add other problems
+        if('Basic Problem B-02' in problem.name): #TODO add other problems
 
             def handle_goal(x,differences):
 
@@ -247,7 +261,29 @@ class Agent:
                         match_goal = 'single_object_change_multiple'
                     elif(len(differences)==1):
                         match_goal = 'single_object_change_single'
+            elif ((same_num_figures_A_B) and (len(figures_A) == 2)):
+                num_of_objects = len(figures_A)
+                # remember that this implementation is brittle if the order of the objects isn't the same but the objects themselves are!
 
+                one_object_inside_another_A = check_if_object_inside_another(figures_A)
+                one_object_inside_another_B = check_if_object_inside_another(figures_B)
+
+                # if both figures have one object inside of another
+                if(one_object_inside_another_A and one_object_inside_another_B):
+                    # inside_object_A
+                    # outside_object_A
+                    #
+                    # inside_object_B
+                    # outside_object_A
+
+                # for a, b in zip(figures_A, figures_B):
+                #     print(a)
+                #     print('_')
+                #     print(b)
+                #     print('\n')
+
+
+                    # if(a['properties'])
 
 
             print('match goal: '+match_goal)
