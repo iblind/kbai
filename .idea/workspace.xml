@@ -7,6 +7,7 @@
       <change beforePath="$PROJECT_DIR$/AgentAnswers.csv" beforeDir="false" afterPath="$PROJECT_DIR$/AgentAnswers.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ProblemResults.csv" beforeDir="false" afterPath="$PROJECT_DIR$/ProblemResults.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SetResults.csv" beforeDir="false" afterPath="$PROJECT_DIR$/SetResults.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/language.txt" beforeDir="false" afterPath="$PROJECT_DIR$/language.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +41,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1580620477320</updated>
-      <workItem from="1580620483367" duration="32318000" />
+      <workItem from="1580620483367" duration="38120000" />
     </task>
     <servers />
   </component>

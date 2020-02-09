@@ -19,11 +19,13 @@ pp = pprint.PrettyPrinter(indent=4)
 
 
 
+
 class makeFigure:
     def __init__(self, figure, name, properties):
         self.figure = figure
         self.name = name
         self.properties = properties
+
 
 def check_num_figures(a,b):
     if(len(a)==len(b)):
@@ -94,8 +96,9 @@ def compare_object_properties(fig_A, fig_B):
                 same_properties = 0
                 differences[key] = {'same_properties':same_properties,'differences':{'A': fig_A['properties'][key], 'B': fig_B['properties'][key]}}
 
-    print(differences)
+    # print(differences)
     return differences
+
     # print(differences)
     # transformations = []
     # for attribute in list(differences.keys()):
@@ -129,8 +132,9 @@ class Agent:
     # Returning your answer as a string may cause your program to crash.
     def Solve(self,problem):
 
-
-        if('Basic Problem B-04' in problem.name): #TODO add other problems
+        solvethings=1
+    # 'Basic Problem B-04' in problem.name
+        if(solvethings): #TODO add other problems
 
             def handle_goal(x,differences):
 
@@ -146,11 +150,32 @@ class Agent:
 
                     differences_A_B = differences
 
+                    attribute_A_B = differences_A_B[0]['differences']['attribute']
+
+                    if(attribute_A_B=='angle'):
+                        difference_attribute_A_B = int(differences_A_B[0]['differences']['B'])-int(differences_A_B[0]['differences']['A'])
+
+                    print('-')
+                    print(differences_A_B)
+                    print('-')
+
                     for answer in potential_answers:
 
                         differences_C_and_choice = compare_object_properties(figures_C[0], answer[0])
                         # Reduce differences to only relevant ones
                         relevant_differences_C_and_choice = select_relevant_transformation(differences_C_and_choice)
+
+                        if(len(relevant_differences_C_and_choice)==0):
+                            continue
+                        attribute_C_choice = relevant_differences_C_and_choice[0]['differences']['attribute']
+
+                        print(relevant_differences_C_and_choice)
+                        if(attribute_C_choice=='angle'):
+                            difference_attribute_C_choice = int(relevant_differences_C_and_choice[0]['differences']['B']) - int(relevant_differences_C_and_choice[0]['differences']['A'])
+                            print(difference_attribute_C_choice)
+                            if ((attribute_A_B==attribute_C_choice) and(difference_attribute_A_B==difference_attribute_C_choice)):
+                                returned_answer = int((answer[0]['figure']))
+                                return returned_answer
 
                         if(differences_A_B==relevant_differences_C_and_choice):
                             returned_answer = int((answer[0]['figure']))
