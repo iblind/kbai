@@ -240,7 +240,6 @@ def compare_objects(obj1, obj2):
     difference_object['obj_1_exclusive_properties']=obj_1_exclusive_properties
     difference_object['obj_2_exclusive_properties'] = obj_2_exclusive_properties
 
-    pp.pprint(difference_object)
     return difference_object
 
 
@@ -270,8 +269,43 @@ class Agent:
         solvethings=1
         # solvethings
     # 'Basic Problem B-04' in problem.name
-        if('Basic Problem B-03' in problem.name): #TODO add other problems
+        if('Basic Problem B-0' in problem.name): #TODO add other problems
             print(problem.name)
+
+            def handle_differences_one_object(dif_A_B, dif_A_C):
+
+                # If same object in figures A, B, and C (i.e., all objects the same)
+                if((dif_A_B['object_identical']==True) and (dif_A_C['object_identical']==True)):
+                    for choice in potential_answers:
+                        dif_C_1 =  compare_objects(figures_C[0],choice[0])
+                        if((dif_C_1==dif_A_B) and (dif_C_1==dif_A_C)):
+                            answer = choice[0]['meta_fig_name']
+                            print('answer is: '+answer )
+
+                # If there's a difference between figures A and B, but not A and C (horizontal difference, vertically the same)
+                elif((dif_A_B['object_identical']==False) and (dif_A_C['object_identical']==True)):
+                    for choice in potential_answers:
+                        dif_C_1 = compare_objects(figures_C[0], choice[0])
+                        if(dif_C_1==dif_A_B):
+                            answer = choice[0]['meta_fig_name']
+                            print('answer is: ' + answer)
+
+                # If there's a differences between figures A and C, but not A and B (vertical different, horizontally the same)
+                elif((dif_A_B['object_identical']==True) and (dif_A_C['object_identical']==False)):
+                    for choice in potential_answers:
+                        dif_B_1 = compare_objects(figures_B[0], choice[0])
+                        if(dif_C_1==dif_A_C):
+                            answer = choice[0]['meta_fig_name']
+                            print('answer is: ' + answer)
+
+                # If there's a difference between both A and B AND A and C (vertical AND horizontal difference)
+                elif ((dif_A_B['object_identical'] == False) and (dif_A_C['object_identical'] == False)):
+                    for choice in potential_answers:
+                        dif_C_1 = compare_objects(figures_C[0], choice[0])
+                        if (dif_C_1 == dif_A_C):
+                            answer = choice[0]['meta_fig_name']
+                            print('answer is: ' + answer)
+
             def handle_goal(x,differences):
 
                 if (x == 'single_object_no_change'):
@@ -375,9 +409,6 @@ class Agent:
 
             potential_answers= [figures_1,figures_2,figures_3,figures_4,figures_5,figures_6]
 
-
-
-
             match_goal = ' '
             differences = {}
 
@@ -396,13 +427,32 @@ class Agent:
             same_num_figures_A_B = length_fig_A == length_fig_B
             same_num_figures_A_C = length_fig_A == length_fig_C
 
+            # If same number of figures in A-B, A-C dyads AND that number is 1
+            if((same_num_figures_A_B) and (same_num_figures_A_B) and (length_fig_A==1)):
+                print('\n\n')
+                print('Difference between A and B:')
+                difference_A_B = compare_objects(figures_A[0], figures_B[0])
+                pp.pprint(difference_A_B)
+                print('\n')
+                print('Difference between A and C:')
+                difference_A_C = compare_objects(figures_A[0], figures_C[0])
+                pp.pprint(difference_A_C)
+                print('\n')
+                pp.pprint(difference_A_C['object_identical'])
+
+                handle_differences_one_object(difference_A_B,difference_A_C)
+
+
+
+
+
 
             # QA checks
-            check_problem_list =['B-01', 'B-03', 'B-04', 'B-05', 'B-07', 'B-09']
-
-            for problem in check_problem_list:
-                if(problem in problem.name ):
-                    compare_objects(figures_A[0],figures_B[0])
+            # check_problem_list = ['B-01', 'B-03', 'B-04', 'B-05', 'B-07', 'B-09']
+            #
+            # for prob in check_problem_list:
+            #     if(prob in problem.name):
+            #         compare_objects(figures_A[0],figures_B[0])
 
             # Same number of figures AND 1 figure each
             if((same_num_figures_A_B) and (len(figures_A)==1)):
