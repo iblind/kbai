@@ -13,7 +13,7 @@
 import inspect
 import pprint
 from PIL import Image
-import numpy
+import numpy as np
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -217,7 +217,7 @@ class Agent:
                         if(attribute_C_choice=='angle'):
                             difference_attribute_C_choice = int(relevant_differences_C_and_choice[0]['differences']['B']) - int(relevant_differences_C_and_choice[0]['differences']['A'])
                             print(difference_attribute_C_choice)
-                            if ((attribute_A_B==attribute_C_choice) and(difference_attribute_A_B==difference_attribute_C_choice)):
+                            if ((attribute_A_B==attribute_C_choice) and(np.absolute(difference_attribute_A_B)==np.absolute(difference_attribute_C_choice))):
                                 returned_answer = int((answer[0]['figure']))
                                 return returned_answer
 
