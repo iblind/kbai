@@ -244,6 +244,15 @@ def compare_objects(obj1, obj2):
     return difference_object
 
 
+def getAngleDifference(ang):
+    if (ang < -180):
+        # print(ang + 360)
+        ang + 360
+    else:
+        # print(ang)
+        return ang
+
+
 class Agent:
     # The default constructor for your Agent. Make sure to execute any
     # processing necessary before your Agent starts solving problems here.
@@ -282,6 +291,7 @@ class Agent:
                         if((dif_C_choice==dif_A_B) and (dif_C_choice==dif_A_C)):
                             answer = choice[0]['meta_fig_name']
                             print('answer is: '+answer )
+                            return int(answer)
 
                 # If there's a difference between figures A and B, but not A and C (horizontal difference, vertically the same)
                 elif((dif_A_B['object_identical']==False) and (dif_A_C['object_identical']==True) and ( dif_A_B['same_properties']==True)):
@@ -294,6 +304,7 @@ class Agent:
                             if(dif_C_1==dif_A_B):
                                 answer = choice[0]['meta_fig_name']
                                 print('answer is: ' + answer)
+                                return int(answer)
 
                 # # If there's a differences between figures A and C, but not A and B (vertical different, horizontally the same), and if difference is only in values
                 elif((dif_A_B['object_identical']==True) and (dif_A_C['object_identical']==False) and (dif_A_C['same_properties']==True)):
@@ -303,6 +314,7 @@ class Agent:
                             if(dif_B_1==dif_A_C):
                                 answer = choice[0]['meta_fig_name']
                                 print('answer is: ' + answer)
+                                return int(answer)
                 #
                 # If there's a difference between both A and B AND A and C (vertical AND horizontal difference), and if difference is only in values
                 elif ((dif_A_B['object_identical'] == False) and (dif_A_C['object_identical'] == False) and (dif_A_B['same_properties'] == True) and (dif_A_C['same_properties'] == True)):
@@ -330,21 +342,53 @@ class Agent:
                             # pp.pprint(dif_C_choice)
 
 
-                            print('horizontal: A vs. B')
-                            pp.pprint(dif_A_B)
-                            print('horizontal: C vs. Choice')
-                            pp.pprint(dif_C_choice)
-
-                            print('vertical: A vs. C')
-                            pp.pprint(dif_A_C)
-                            print('vertical: B vs. Choice')
-                            pp.pprint(dif_B_choice)
+                            # print('horizontal: A vs. B')
+                            # pp.pprint(dif_A_B)
+                            # print('horizontal: C vs. Choice')
+                            # pp.pprint(dif_C_choice)
+                            #
+                            # print('vertical: A vs. C')
+                            # pp.pprint(dif_A_C)
+                            # print('vertical: B vs. Choice')
+                            # pp.pprint(dif_B_choice)
 
                             if ((dif_C_choice == dif_A_B) and (dif_B_choice==dif_A_C)):
                                 answer = choice[0]['meta_fig_name']
                                 print('answer is: ' + answer)
+                                return int(answer)
                             elif((relevant_dif_B_choice==relevant_dif_C_choice) and (relevant_dif_C_choice=='angle') ):
-                                print('')
+
+                                all_obj_2_values=[int(dif_A_B['same_property_differences'][0]['obj_2_value']),
+                                                  int(dif_A_B['same_property_differences'][0]['obj_1_value']),
+                                                  int(dif_A_C['same_property_differences'][0]['obj_2_value'])
+                                                  ]
+
+                                angle_dif_A_B = int(dif_A_B['same_property_differences'][0]['obj_2_value']) - int(dif_A_B['same_property_differences'][0]['obj_1_value'])
+                                angle_dif_A_C = int(dif_A_C['same_property_differences'][0]['obj_2_value']) - int(dif_A_C['same_property_differences'][0]['obj_1_value'])
+                                angle_dif_C_choice = int(dif_C_choice['same_property_differences'][0]['obj_2_value']) - int(dif_C_choice['same_property_differences'][0]['obj_1_value'])
+                                angle_dif_B_choice = int(dif_B_choice['same_property_differences'][0]['obj_2_value']) - int(dif_B_choice['same_property_differences'][0]['obj_1_value'])
+
+                                ag_dif_ab = (angle_dif_A_B + 180) % 360 - 180
+                                ag_dif_ac = (angle_dif_A_C + 180) % 360 - 180
+                                ag_dif_c_choice = (angle_dif_A_C + 180) % 360 - 180
+                                ag_dif_b_choice = (angle_dif_B_choice + 180) % 360 - 180
+
+
+                                value_not_already_in_figures = False
+                                if(int(choice[0]['properties']['angle']) in all_obj_2_values):
+                                    continue
+                                else:
+                                    value_not_already_in_figures = True
+
+                                all_absolute_values_same = np.absolute(ag_dif_ab) == np.absolute(ag_dif_ac) == np.absolute(ag_dif_c_choice) == np.absolute(ag_dif_b_choice)
+
+                                if(all_absolute_values_same and value_not_already_in_figures):
+                                    answer = choice[0]['meta_fig_name']
+                                    print('answer is: ' + answer)
+                                    return int(answer)
+
+                else:
+                    return -1
 
             def handle_goal(x,differences):
 
@@ -479,9 +523,10 @@ class Agent:
                 # pp.pprint(difference_A_C)
                 # print('\n')
 
-
-                handle_differences_one_object(difference_A_B,difference_A_C)
-
+                test_return_val = handle_differences_one_object(difference_A_B, difference_A_C)
+                if(test_return_val is None):
+                    test_return_val=-1
+                return test_return_val
 
 
 
@@ -493,6 +538,8 @@ class Agent:
             # for prob in check_problem_list:
             #     if(prob in problem.name):
             #         compare_objects(figures_A[0],figures_B[0])
+
+
 
             # Same number of figures AND 1 figure each
             if((same_num_figures_A_B) and (len(figures_A)==1)):
