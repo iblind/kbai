@@ -159,7 +159,6 @@ def compare_same_property_object(obj1, obj2):
     # return differences
 
 
-
 # REFORMATTING CODE!!!
 def how_many_object_in_figure(fig):
     return len(fig)
@@ -252,6 +251,59 @@ def getAngleDifference(ang):
         # print(ang)
         return ang
 
+def check_if_all_but_names_are_same(fig1,fig2):
+    stripped_figure_1 = []
+    stripped_figure_2 = []
+
+    for obj in fig1:
+        stripped_obj = {}
+        stripped_obj['properties'] = obj['properties']
+        stripped_obj['properties_list'] = obj['properties_list']
+        stripped_obj['properties_list_bonus'] = obj['properties_list_bonus']
+        stripped_obj['properties_list_standard'] = obj['properties_list_standard']
+
+        if ('inside' in stripped_obj['properties_list_bonus']):
+            stripped_obj['properties']['inside'] = 'same_object'
+        elif ('above' in stripped_obj['properties_list_bonus']):
+            stripped_obj['properties']['above'] = 'same_object'
+
+        stripped_figure_1.append(stripped_obj)
+        del stripped_obj
+
+    for obj in fig2:
+        stripped_obj = {}
+        stripped_obj['properties'] = obj['properties']
+        stripped_obj['properties_list'] = obj['properties_list']
+        stripped_obj['properties_list_bonus'] = obj['properties_list_bonus']
+        stripped_obj['properties_list_standard'] = obj['properties_list_standard']
+
+        if('inside' in stripped_obj['properties_list_bonus']):
+            stripped_obj['properties']['inside']='same_object'
+        elif('above' in stripped_obj['properties_list_bonus']):
+            stripped_obj['properties']['above']='same_object'
+
+        stripped_figure_2.append(stripped_obj)
+        del stripped_obj
+
+
+
+    # print('FIGURE 1')
+    # pp.pprint(stripped_figure_1)
+    # print('\n')
+    #
+    # print('FIGURE 2')
+    # pp.pprint(stripped_figure_2)
+    # print('\n')
+    #
+    # print('figure 1')
+    # pp.pprint(sorted(stripped_figure_1, key = lambda i: i['properties_list']))
+    #
+    # print('figure 2')
+    # pp.pprint(sorted(stripped_figure_2, key=lambda i: i['properties_list']))
+
+    # Compare the lists, but only in order!
+    same_figures= sorted(stripped_figure_1, key = lambda i: i['properties_list'])==sorted(stripped_figure_2, key = lambda i: i['properties_list'])
+    return same_figures
 
 class Agent:
     # The default constructor for your Agent. Make sure to execute any
@@ -279,7 +331,7 @@ class Agent:
         solvethings=1
         # solvethings
     # 'Basic Problem B-0' in problem.name
-        if(solvethings): #TODO add other problems
+        if('Basic Problem B-' in problem.name): #TODO add other problems
             print(problem.name)
 
             def handle_differences_one_object(dif_A_B, dif_A_C):
@@ -389,6 +441,16 @@ class Agent:
 
                 else:
                     return -1
+
+            def handle_differences_two_objects(differences):
+                if(differences=='identical_objects'):
+                    for choice in potential_answers:
+                        same_objects_in_A_choice = check_if_all_but_names_are_same(figures_A, choice)
+
+                        if(same_objects_in_A_choice):
+                            answer = choice[0]['meta_fig_name']
+                            print('answer is: ' + answer)
+                            return int(answer)
 
             def handle_goal(x,differences):
 
@@ -529,20 +591,24 @@ class Agent:
                 return test_return_val
 
             elif ((same_num_figures_A_B) and (same_num_figures_A_B) and (length_fig_A == 2)):
-                # print('\n\n')
-                # print('Difference between A and B:')
-                difference_A_B = compare_objects(figures_A[0], figures_B[0])
-                # pp.pprint(difference_A_B)
-                # print('\n')
-                # print('Difference between A and C:')
-                difference_A_C = compare_objects(figures_A[0], figures_C[0])
-                # pp.pprint(difference_A_C)
-                # print('\n')
 
-                test_return_val = handle_differences_one_object(difference_A_B, difference_A_C)
-                if (test_return_val is None):
-                    test_return_val = -1
-                return test_return_val
+                same_objects_in_A_B = check_if_all_but_names_are_same(figures_A,figures_B)
+                same_objects_in_A_C = check_if_all_but_names_are_same(figures_A, figures_C)
+
+                if(same_objects_in_A_B and same_objects_in_A_C):
+                    test_return_val = handle_differences_two_objects('identical_objects')
+                    if (test_return_val is None):
+                        test_return_val = -1
+                    return test_return_val
+
+                # pp.pprint(figures_A)
+            # elif((not same_num_figures_A_B) or (not same_num_figures_A_C)):
+            #     for fig in figures_A:
+            #         print(fig['properties_list_bonus'])
+                 # (test_return_val is None):
+                 #    test_return_val = -1
+                # return test_return_val
+
 
 
 
