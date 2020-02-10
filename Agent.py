@@ -278,8 +278,8 @@ class Agent:
 
         solvethings=1
         # solvethings
-    # 'Basic Problem B-04' in problem.name
-        if('Basic Problem B-0' in problem.name): #TODO add other problems
+    # 'Basic Problem B-0' in problem.name
+        if(solvethings): #TODO add other problems
             print(problem.name)
 
             def handle_differences_one_object(dif_A_B, dif_A_C):
@@ -526,6 +526,22 @@ class Agent:
                 test_return_val = handle_differences_one_object(difference_A_B, difference_A_C)
                 if(test_return_val is None):
                     test_return_val=-1
+                return test_return_val
+
+            elif ((same_num_figures_A_B) and (same_num_figures_A_B) and (length_fig_A == 2)):
+                # print('\n\n')
+                # print('Difference between A and B:')
+                difference_A_B = compare_objects(figures_A[0], figures_B[0])
+                # pp.pprint(difference_A_B)
+                # print('\n')
+                # print('Difference between A and C:')
+                difference_A_C = compare_objects(figures_A[0], figures_C[0])
+                # pp.pprint(difference_A_C)
+                # print('\n')
+
+                test_return_val = handle_differences_one_object(difference_A_B, difference_A_C)
+                if (test_return_val is None):
+                    test_return_val = -1
                 return test_return_val
 
 
