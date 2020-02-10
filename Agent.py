@@ -331,11 +331,13 @@ class Agent:
         solvethings=1
         # solvethings
     # 'Basic Problem B-0' in problem.name
-        if('Basic Problem B-' in problem.name): #TODO add other problems
+        if(solvethings): #TODO add other problems
             print(problem.name)
 
             def handle_differences_one_object(dif_A_B, dif_A_C):
 
+                pp.pprint(dif_A_B)
+                pp.pprint(dif_A_C)
                 # If same object in figures A, B, and C (i.e., all objects the same)
                 if((dif_A_B['object_identical']==True) and (dif_A_C['object_identical']==True)):
                     for choice in potential_answers:
@@ -438,7 +440,20 @@ class Agent:
                                     answer = choice[0]['meta_fig_name']
                                     print('answer is: ' + answer)
                                     return int(answer)
+                    elif (dif_A_B['num_same_property_differences'] > 1 or dif_A_C['num_same_property_differences'] > 1):
+                        for choice in potential_answers:
 
+                            dif_B_choice = compare_objects(figures_B[0], choice[0])
+                            dif_C_choice = compare_objects(figures_C[0], choice[0])
+
+                            if((dif_A_B['num_same_property_differences']==dif_C_choice['num_same_property_differences']) and (dif_A_C['num_same_property_differences']==dif_B_choice['num_same_property_differences'])):
+                                print('nice')
+                                answer = choice[0]['meta_fig_name']
+                                print('answer is: ' + answer)
+                                return int(answer)
+
+                            # pp.pprint(dif_B_choice)
+                            # pp.pprint(dif_C_choice)
                 else:
                     return -1
 
